@@ -20,7 +20,7 @@ namespace MUST
         public static bool PurgeKeyboardLayout(InputLanguage inputLanguage)
         {
             // Get a handle to the keyboard layout
-            IntPtr hkl = inputLanguage.Handle; //LoadKeyboardLayout(inputLanguage.Culture.KeyboardLayoutId.ToString("X8"), 1);
+            IntPtr hkl = inputLanguage.Handle;
 
             // Purge the threat.
             return UnloadKeyboardLayout(hkl);

@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Security.Principal;
@@ -38,17 +40,7 @@ namespace MUST
 
         public event RegistryChangeHandler Changed;
         public event RegistryChangeHandler Error;
-
-        public static SecurityIdentifier SID
-        {
-            get
-            {
-                WindowsIdentity identity = WindowsIdentity.GetCurrent();
-
-                return identity.User;
-            }
-        }
-
+        
         public RegistryChangeMonitor(string registryPath) : this(registryPath, RegNotifyChange.LastSet) {; }
         public RegistryChangeMonitor(string registryPath, RegNotifyChange filter)
         {
@@ -155,9 +147,7 @@ namespace MUST
                            null);
                     }
                 }
-
-                var locales = Registry.CurrentUser.OpenSubKey("Keyboard Layout\\Preload", false);
-
+ 
                 if (ptr != IntPtr.Zero)
                 {
                     while (true)

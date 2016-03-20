@@ -49,6 +49,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Purifiers\IPurifier.cs" />
     <Compile Include="ISurveillance.cs" />
     <Compile Include="KeyboardLayoutCleaner.cs" />
     <Compile Include="KeyboardLayoutSpy.cs" />
@@ -61,9 +62,12 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
+    <Compile Include="Purifiers\InputLanguagePurifier.cs" />
     <Compile Include="RegistryChangeMonitor\RegistryChangeEventArgs.cs" />
     <Compile Include="RegistryChangeMonitor\RegistryChangeMonitor.cs" />
-    <Compile Include="Whitelister.cs" />
+    <Compile Include="SettingsReader.cs" />
+    <Compile Include="Purifiers\RegistryKeyLocalePurifier.cs" />
+    <Compile Include="Utilities.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
