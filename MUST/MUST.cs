@@ -14,17 +14,29 @@ namespace MUST
         private readonly KeyboardLayoutSpy _keyboardLayoutSpy;
         private Thread KeyboardSurveillanceThread { get; set; }
         private Thread RegistryLocaleSurveillanceThread { get; set; }
+        private readonly IPurifier _registryPurifier;
+        private readonly IPurifier _inputLanguagePurifier;
+        private readonly SettingsReader _settingsReader;
+
         public MUST()
         {
+            _settingsReader = new SettingsReader();
+
+            _registryPurifier = new RegistryKeyLocalePurifier(_settingsReader);
+            _inputLanguagePurifier = new InputLanguagePurifier(_settingsReader);
+
             _keyboardLayoutSpy = new KeyboardLayoutSpy();
             KeyboardSurveillanceThread = new Thread(_keyboardLayoutSpy.Surveillance);
 
             _registryChangeMonitor = new RegistryChangeMonitor(
-                $@"HKEY_USERS\{RegistryChangeMonitor.SID}\Keyboard Layout\Preload");
+                $@"HKEY_USERS\{Utilities.SID}\Keyboard Layout\Preload");
 
             _registryChangeMonitor.Changed += (sender, args) =>
             {
                 Console.WriteLine("Registry changed!");
+
+                _inputLanguagePurifier.Purify();
+                _registryPurifier.Purify();
             };
         }
 
