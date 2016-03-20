@@ -12,9 +12,8 @@ namespace MUST
     {
         static void Main(string[] args)
         {
-            Console.SetWindowSize(85,43);
-
-            Console.WriteLine("Executing MUST ... Pressing any key will abort surveillance.");
+            Console.SetWindowSize(77,41);
+            Console.BufferHeight = 77;
             
             LogoSplash.ConsoleWriteImage(new Bitmap("nsa.png"));
 
