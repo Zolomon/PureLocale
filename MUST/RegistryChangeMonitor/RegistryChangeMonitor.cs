@@ -1,87 +1,89 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.ComponentModel;
+using System.Diagnostics;
+using System.Reflection;
+using System.Runtime.InteropServices;
+using System.Security.Principal;
+using System.Threading;
+using Microsoft.Win32;
 
-namespace RegistrySpy
+namespace MUST
 {
-    using System;
-    using System.ComponentModel;
-    using System.Diagnostics;
-    using System.Reflection;
-    using System.Runtime.InteropServices;
-    using System.Threading;
-    using Microsoft.Win32;
-
-    #region Delegates
     public delegate void RegistryChangeHandler(object sender, RegistryChangeEventArgs e);
-    #endregion
 
     public class RegistryChangeMonitor : IDisposable
     {
-        private string _registryPath;
-        private REG_NOTIFY_CHANGE _filter;
+        private readonly string _registryPath;
+        private readonly RegNotifyChange _filter;
         private Thread _monitorThread;
         private RegistryKey _monitorKey;
-     
+
         [DllImport("Advapi32.dll")]
         private static extern int RegNotifyChangeKeyValue(
            IntPtr hKey,
            bool watchSubtree,
-           REG_NOTIFY_CHANGE notifyFilter,
+           RegNotifyChange notifyFilter,
            IntPtr hEvent,
            bool asynchronous
            );
-     
+
         [Flags]
-        public enum REG_NOTIFY_CHANGE : uint
+        public enum RegNotifyChange : uint
         {
-            NAME = 0x1,
-            ATTRIBUTES = 0x2,
-            LAST_SET = 0x4,
-            SECURITY = 0x8
+            Name = 0x1,
+            Attributes = 0x2,
+            LastSet = 0x4,
+            Security = 0x8
         }
 
         public event RegistryChangeHandler Changed;
         public event RegistryChangeHandler Error;
 
-        public RegistryChangeMonitor(string registryPath) : this(registryPath, REG_NOTIFY_CHANGE.LAST_SET) {; }
-        public RegistryChangeMonitor(string registryPath, REG_NOTIFY_CHANGE filter)
+        public static SecurityIdentifier SID
         {
-            this._registryPath = registryPath.ToUpper();
-            this._filter = filter;
+            get
+            {
+                WindowsIdentity identity = WindowsIdentity.GetCurrent();
+
+                return identity.User;
+            }
+        }
+
+        public RegistryChangeMonitor(string registryPath) : this(registryPath, RegNotifyChange.LastSet) {; }
+        public RegistryChangeMonitor(string registryPath, RegNotifyChange filter)
+        {
+            _registryPath = registryPath.ToUpper();
+            _filter = filter;
         }
         ~RegistryChangeMonitor()
         {
-            this.Dispose(false);
+            Dispose(false);
         }
-       
+
         private void Dispose(bool disposing)
         {
             if (disposing)
                 GC.SuppressFinalize(this);
 
-            this.Stop();
+            Stop();
         }
         public void Dispose()
         {
-            this.Dispose(true);
+            Dispose(true);
         }
         public void Start()
         {
             lock (this)
             {
-                if (this._monitorThread == null)
+                if (_monitorThread == null)
                 {
-                    ThreadStart ts = new ThreadStart(this.MonitorThread);
-                    this._monitorThread = new Thread(ts);
-                    this._monitorThread.IsBackground = true;
+                    ThreadStart ts = MonitorThread;
+                    _monitorThread = new Thread(ts) { IsBackground = true };
                 }
 
-                if (!this._monitorThread.IsAlive)
+                if (!_monitorThread.IsAlive)
                 {
-                    this._monitorThread.Start();
+                    _monitorThread.Start();
                 }
             }
         }
@@ -89,19 +91,19 @@ namespace RegistrySpy
         {
             lock (this)
             {
-                this.Changed = null;
-                this.Error = null;
+                Changed = null;
+                Error = null;
 
-                if (this._monitorThread != null)
+                if (_monitorThread != null)
                 {
-                    this._monitorThread = null;
+                    _monitorThread = null;
                 }
 
                 // The "Close()" will trigger RegNotifyChangeKeyValue if it is still listening
-                if (this._monitorKey != null)
+                if (_monitorKey != null)
                 {
-                    this._monitorKey.Close();
-                    this._monitorKey = null;
+                    _monitorKey.Close();
+                    _monitorKey = null;
                 }
             }
         }
@@ -113,35 +115,35 @@ namespace RegistrySpy
 
                 lock (this)
                 {
-                    if (this._registryPath.StartsWith("HKEY_CLASSES_ROOT"))
-                        this._monitorKey = Registry.ClassesRoot.OpenSubKey(this._registryPath.Substring(18));
-                    else if (this._registryPath.StartsWith("HKCR"))
-                        this._monitorKey = Registry.ClassesRoot.OpenSubKey(this._registryPath.Substring(5));
-                    else if (this._registryPath.StartsWith("HKEY_CURRENT_USER"))
-                        this._monitorKey = Registry.CurrentUser.OpenSubKey(this._registryPath.Substring(18));
-                    else if (this._registryPath.StartsWith("HKCU"))
-                        this._monitorKey = Registry.CurrentUser.OpenSubKey(this._registryPath.Substring(5));
-                    else if (this._registryPath.StartsWith("HKEY_LOCAL_MACHINE"))
-                        this._monitorKey = Registry.LocalMachine.OpenSubKey(this._registryPath.Substring(19));
-                    else if (this._registryPath.StartsWith("HKLM"))
-                        this._monitorKey = Registry.LocalMachine.OpenSubKey(this._registryPath.Substring(5));
-                    else if (this._registryPath.StartsWith("HKEY_USERS"))
-                        this._monitorKey = Registry.Users.OpenSubKey(this._registryPath.Substring(11));
-                    else if (this._registryPath.StartsWith("HKU"))
-                        this._monitorKey = Registry.Users.OpenSubKey(this._registryPath.Substring(4));
-                    else if (this._registryPath.StartsWith("HKEY_CURRENT_CONFIG"))
-                        this._monitorKey = Registry.CurrentConfig.OpenSubKey(this._registryPath.Substring(20));
-                    else if (this._registryPath.StartsWith("HKCC"))
-                        this._monitorKey = Registry.CurrentConfig.OpenSubKey(this._registryPath.Substring(5));
+                    if (_registryPath.StartsWith("HKEY_CLASSES_ROOT"))
+                        _monitorKey = Registry.ClassesRoot.OpenSubKey(_registryPath.Substring(18));
+                    else if (_registryPath.StartsWith("HKCR"))
+                        _monitorKey = Registry.ClassesRoot.OpenSubKey(_registryPath.Substring(5));
+                    else if (_registryPath.StartsWith("HKEY_CURRENT_USER"))
+                        _monitorKey = Registry.CurrentUser.OpenSubKey(_registryPath.Substring(18));
+                    else if (_registryPath.StartsWith("HKCU"))
+                        _monitorKey = Registry.CurrentUser.OpenSubKey(_registryPath.Substring(5));
+                    else if (_registryPath.StartsWith("HKEY_LOCAL_MACHINE"))
+                        _monitorKey = Registry.LocalMachine.OpenSubKey(_registryPath.Substring(19));
+                    else if (_registryPath.StartsWith("HKLM"))
+                        _monitorKey = Registry.LocalMachine.OpenSubKey(_registryPath.Substring(5));
+                    else if (_registryPath.StartsWith("HKEY_USERS"))
+                        _monitorKey = Registry.Users.OpenSubKey(_registryPath.Substring(11));
+                    else if (_registryPath.StartsWith("HKU"))
+                        _monitorKey = Registry.Users.OpenSubKey(_registryPath.Substring(4));
+                    else if (_registryPath.StartsWith("HKEY_CURRENT_CONFIG"))
+                        _monitorKey = Registry.CurrentConfig.OpenSubKey(_registryPath.Substring(20));
+                    else if (_registryPath.StartsWith("HKCC"))
+                        _monitorKey = Registry.CurrentConfig.OpenSubKey(_registryPath.Substring(5));
 
                     // Fetch the native handle
-                    if (this._monitorKey != null)
+                    if (_monitorKey != null)
                     {
                         object hkey = typeof(RegistryKey).InvokeMember(
                            "hkey",
                            BindingFlags.GetField | BindingFlags.Instance | BindingFlags.NonPublic,
                            null,
-                           this._monitorKey,
+                           _monitorKey,
                            null
                            );
 
@@ -155,34 +157,33 @@ namespace RegistrySpy
                 }
 
                 var locales = Registry.CurrentUser.OpenSubKey("Keyboard Layout\\Preload", false);
-                
+
                 if (ptr != IntPtr.Zero)
                 {
                     while (true)
                     {
                         // If this._monitorThread is null that probably means Dispose is being called. Don't monitor anymore.
-                        if ((this._monitorThread == null) || (this._monitorKey == null))
+                        if ((_monitorThread == null) || (_monitorKey == null))
                             break;
 
                         // RegNotifyChangeKeyValue blocks until a change occurs.
-                        int result = RegNotifyChangeKeyValue(ptr, true, this._filter, IntPtr.Zero, false);
+                        int result = RegNotifyChangeKeyValue(ptr, true, _filter, IntPtr.Zero, false);
 
-                        if ((this._monitorThread == null) || (this._monitorKey == null))
+                        if ((_monitorThread == null) || (_monitorKey == null))
                             break;
 
                         if (result == 0)
                         {
-                            if (this.Changed != null)
-                            {
-                                RegistryChangeEventArgs e = new RegistryChangeEventArgs(this);
-                                this.Changed(this, e);
+                            if (Changed == null) continue;
 
-                                if (e.Stop) break;
-                            }
+                            var args = new RegistryChangeEventArgs(this);
+                            Changed(this, args);
+
+                            if (args.Stop) break;
                         }
                         else
                         {
-                            if (this.Error != null)
+                            if (Error != null)
                             {
                                 Win32Exception ex = new Win32Exception();
 
@@ -195,9 +196,8 @@ namespace RegistrySpy
                                 new object[] { new StackTrace(true) }
                                 );
 
-                                RegistryChangeEventArgs e = new RegistryChangeEventArgs(this);
-                                e.Exception = ex;
-                                this.Error(this, e);
+                                var args = new RegistryChangeEventArgs(this) { Exception = ex };
+                                Error(this, args);
                             }
 
                             break;
@@ -207,29 +207,19 @@ namespace RegistrySpy
             }
             catch (Exception ex)
             {
-                if (this.Error != null)
+                if (Error != null)
                 {
-                    RegistryChangeEventArgs e = new RegistryChangeEventArgs(this);
-                    e.Exception = ex;
-                    this.Error(this, e);
+                    var args = new RegistryChangeEventArgs(this) { Exception = ex };
+                    Error(this, args);
                 }
             }
             finally
             {
-                this.Stop();
+                Stop();
             }
         }
-       
-        
-        public bool Monitoring
-        {
-            get
-            {
-                if (this._monitorThread != null)
-                    return this._monitorThread.IsAlive;
 
-                return false;
-            }
-        }
+
+        public bool Monitoring => _monitorThread != null && _monitorThread.IsAlive;
     }
 }

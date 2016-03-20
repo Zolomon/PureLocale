@@ -1,0 +1,9 @@
+﻿<?xml version='1.0' encoding='utf-8'?>
+<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="MUST.Properties" GeneratedClassName="Settings">
+  <Profiles />
+  <Settings>
+    <Setting Name="WhitelistedLocaleIDs" Type="System.String" Scope="User">
+      <Value Profile="(Default)">00000809;0000041d</Value>
+    </Setting>
+  </Settings>
+</SettingsFile>

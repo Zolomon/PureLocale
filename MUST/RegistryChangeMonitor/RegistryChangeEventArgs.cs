@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace MUST.RegistryChangeMonitor
+namespace MUST
 {
     public class RegistryChangeEventArgs : EventArgs
     {

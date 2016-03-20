@@ -12,7 +12,6 @@ namespace MUST
     {
         private readonly RegistryChangeMonitor _registryChangeMonitor;
         private readonly KeyboardLayoutSpy _keyboardLayoutSpy;
-        private readonly RegistryLocaleSpy _registryLocaleSpy;
         private Thread KeyboardSurveillanceThread { get; set; }
         private Thread RegistryLocaleSurveillanceThread { get; set; }
         public MUST()
@@ -20,10 +19,9 @@ namespace MUST
             _keyboardLayoutSpy = new KeyboardLayoutSpy();
             KeyboardSurveillanceThread = new Thread(_keyboardLayoutSpy.Surveillance);
 
-            _registryLocaleSpy = new RegistryLocaleSpy();
-            RegistryLocaleSurveillanceThread = new Thread(_registryLocaleSpy.Surveillance);
+            _registryChangeMonitor = new RegistryChangeMonitor(
+                $@"HKEY_USERS\{RegistryChangeMonitor.SID}\Keyboard Layout\Preload");
 
-            _registryChangeMonitor = new RegistryChangeMonitor("HKEY_USERS\\"+RegistryLocaleSpy.SID+"\\Keyboard Layout\\Preload");
             _registryChangeMonitor.Changed += (sender, args) =>
             {
                 Console.WriteLine("Registry changed!");
@@ -32,15 +30,15 @@ namespace MUST
 
         public void BeginSurveillance()
         {
-            KeyboardSurveillanceThread.Start();
-            //RegistryLocaleSurveillanceThread.Start();
+            //KeyboardSurveillanceThread.Start();
+
             _registryChangeMonitor.Start();
         }
 
         public void StopSurveillance()
         {
-            KeyboardSurveillanceThread.Abort(true);
-            //RegistryLocaleSurveillanceThread.Abort(true);
+            //KeyboardSurveillanceThread.Abort(true);
+
             _registryChangeMonitor.Stop();
         }
     }
