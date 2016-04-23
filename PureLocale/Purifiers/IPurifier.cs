@@ -1,4 +1,4 @@
-﻿namespace MUST
+﻿namespace PureLocale
 {
     public interface IPurifier
     {

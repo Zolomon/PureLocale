@@ -5,9 +5,9 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Microsoft.Win32;
-using MUST.Properties;
+using PureLocale.Properties;
 
-namespace MUST
+namespace PureLocale
 {
     public class RegistryKeyLocalePurifier : IPurifier
     {
