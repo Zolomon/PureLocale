@@ -9,7 +9,7 @@ using System.Security.Principal;
 using System.Threading;
 using Microsoft.Win32;
 
-namespace MUST
+namespace PureLocale
 {
     public delegate void RegistryChangeHandler(object sender, RegistryChangeEventArgs e);
 

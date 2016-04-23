@@ -6,22 +6,19 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace MUST
+namespace PureLocale
 {
     class Program
     {
         static void Main(string[] args)
         {
-            Console.SetWindowSize(77,41);
-            Console.BufferHeight = 77;
-            
-            LogoSplash.ConsoleWriteImage(new Bitmap("nsa.png"));
+            LocalePurifier localePurifier = new LocalePurifier();
+            localePurifier.BeginSurveillance();
 
-            MUST must = new MUST();
-            must.BeginSurveillance();
+            localePurifier.OnPurify(localePurifier, new PurifyEventArgs());
 
             Console.ReadKey(false);
-            must.StopSurveillance();
+            localePurifier.StopSurveillance();
 
             Console.WriteLine("");
         }

@@ -5,7 +5,7 @@ using System.Security.Principal;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MUST
+namespace PureLocale
 {
     public class Utilities
     {

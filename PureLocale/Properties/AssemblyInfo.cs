@@ -5,12 +5,12 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("RegistrySpy")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyTitle("PureLocale")]
+[assembly: AssemblyDescription("Ensures that locale stays consistent")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("RegistrySpy")]
-[assembly: AssemblyCopyright("Copyright ©  2016")]
+[assembly: AssemblyProduct("PureLocale")]
+[assembly: AssemblyCopyright("Copyright Bengt Ericsson © 2016")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -20,7 +20,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("43e9e880-a5fd-4fb7-93e4-80611298affe")]
+[assembly: Guid("b8194f12-739d-4cc1-9d28-fce70a6b09ed")]
 
 // Version information for an assembly consists of the following four values:
 //
