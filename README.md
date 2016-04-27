@@ -10,6 +10,10 @@ Currently there are checks for when `InputLanguage` changes in C#,
 as well as on changes for the `HKEY_CURRENT_USER\Keyboard Layout\Preload` 
 registry key.
 
+# How to specify whitelist
+The Whitelist resides in [https://github.com/Zolomon/PureLocale/blob/master/PureLocale/Properties/Settings.settings](Settings.settings), in the `<Setting Name="WhitelistedLocaleIDs" Type="System.String" Scope="User">` tag as a semicolon separated list of [https://msdn.microsoft.com/en-us/goglobal/bb895996.aspx?f=255&MSPPError=-2147217396](locale IDs found here).
+
+The current example specified `en_GB` and `sv_SE`.
 
 # TODO
 *  [ ] Figure out how to purify `Settings > Time & Language > Region & Language`.
