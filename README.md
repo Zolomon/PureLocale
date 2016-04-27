@@ -11,7 +11,7 @@ as well as on changes for the `HKEY_CURRENT_USER\Keyboard Layout\Preload`
 registry key.
 
 # How to specify whitelist
-The Whitelist resides in [https://github.com/Zolomon/PureLocale/blob/master/PureLocale/Properties/Settings.settings](Settings.settings), in the `<Setting Name="WhitelistedLocaleIDs" Type="System.String" Scope="User">` tag as a semicolon separated list of [https://msdn.microsoft.com/en-us/goglobal/bb895996.aspx?f=255&MSPPError=-2147217396](locale IDs found here).
+The Whitelist resides in [Settings.settings](https://github.com/Zolomon/PureLocale/blob/master/PureLocale/Properties/Settings.settings), in the `<Setting Name="WhitelistedLocaleIDs" Type="System.String" Scope="User">` tag as a semicolon separated list of [locale IDs found here](https://msdn.microsoft.com/en-us/goglobal/bb895996.aspx?f=255&MSPPError=-2147217396).
 
 The current example specified `en_GB` and `sv_SE`.
 
